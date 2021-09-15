@@ -26,11 +26,11 @@ abstract class BaseConsumer
             return self::request('GET', "/$route");
         } catch (\Exception $exception) {
             Log::error($exception);
-            return null;
+            return [];
         }
     }
 
-    protected function post(array $post,)
+    protected function post(array $post)
     {
         Log::info(json_encode($post));
         try {

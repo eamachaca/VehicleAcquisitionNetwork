@@ -8,16 +8,16 @@ class UserConsumer extends BaseConsumer
 
     public function all()
     {
-        return parent::get();
+        return collect(parent::get());
     }
 
     public function only(int $id)
     {
-        return parent::get($id);
+        return collect(parent::get($id));
     }
 
     public function posts($userId)
     {
-        return parent::get("$userId/posts");
+        return collect(parent::get("$userId/posts"));
     }
 }
