@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Consumer\CommentsConsumer;
+use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -32,7 +33,24 @@ class CreateCommentsJob implements ShouldQueue
     public function handle()
     {
         $post = Post::inRandomOrder()->first();
-        $this->getFromAPI($post);
+        //$this->getFromAPI($post); //if you want to create from API
+        //Comment::factory()->for($post)->create(); // if you want to create by Relationships Factories
+        $this->getFromFakerInJob($post); // if you want to create by Relationship only (ok, I'm using faker too, sry)
+
+    }
+
+    private function getFromFakerInJob($post)
+    {
+        $faker = \Faker\Factory::create();
+        $this->createCommentInPost(
+            $post,
+            $this->makeComment(
+                Comment::count() + 1,
+                $faker->name,
+                $faker->email,
+                $faker->sentences(15)
+            )
+        );
     }
 
     private function makeComment($id, $name, $email, $body)
@@ -54,7 +72,15 @@ class CreateCommentsJob implements ShouldQueue
     {
         $alreadyComments = $post->comments;
         $apiComments = (new CommentsConsumer)->fromPost($post->id);
-        $apiComments->whereIn('postId', $alreadyComments->pluck('id')->toArray());
-
+        $comment = $apiComments->whereNotIn('postId', $alreadyComments->pluck('id')->toArray())->first();
+        $this->createCommentInPost(
+            $post,
+            $this->makeComment(
+                $comment->id,
+                $comment->name,
+                $comment->email,
+                $comment->body
+            )
+        );
     }
 }
