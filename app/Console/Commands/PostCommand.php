@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Consumer\PostConsumer;
 use App\Models\Post;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class PostCommand extends Command
@@ -47,7 +48,8 @@ class PostCommand extends Command
                 $this->info('Posts has been created.');
             else {
                 $posts = (new PostConsumer)->all()->map(function ($post) {
-                    return ['id' => $post->id, 'title' => $post->title, 'body' => $post->body, 'user_id' => $post->userId];
+                    $now = Carbon::now();
+                    return ['id' => $post->id, 'title' => $post->title, 'body' => $post->body, 'user_id' => $post->userId, 'created_at' => $now, 'updated_at' => $now];
                 });
                 Post::insert($posts->toArray());
                 $this->info('Post Created Successfully.');

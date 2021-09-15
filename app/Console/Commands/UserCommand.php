@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Consumer\UserConsumer;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -49,6 +50,7 @@ class UserCommand extends Command
                 $this->info('Keeping Tables.');
         } else {
             $users = (new UserConsumer())->all()->map(function ($user) {
+                $now = Carbon::now();
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -58,6 +60,8 @@ class UserCommand extends Command
                     'phone' => $user->phone,
                     'website' => $user->website,
                     'company' => json_encode($user->company),
+                    'created_at' => $now,
+                    'updated_at' => $now
                 ];
             })->toArray();
             User::insert($users);

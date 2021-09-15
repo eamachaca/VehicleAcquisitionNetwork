@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    dd(\App\Models\Comment::factory()->for(\App\Models\Post::inRandomOrder()->first())->create(),\App\Models\Comment::all());
     return view('welcome');
 });
+Route::get('users', [\App\Http\Controllers\HomeController::class, 'user']);
+Route::get('users/{id}', [\App\Http\Controllers\HomeController::class, 'posts'])->name('posts');
