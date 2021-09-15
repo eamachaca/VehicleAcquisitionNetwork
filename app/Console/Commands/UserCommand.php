@@ -45,7 +45,8 @@ class UserCommand extends Command
             if ($this->confirm('Do you want fresh tables?', true)) {
                 Artisan::call('migrate:fresh');
                 $this->handle();
-            }
+            } else
+                $this->info('Keeping Tables.');
         } else {
             $users = (new UserConsumer())->all()->map(function ($user) {
                 return [

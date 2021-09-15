@@ -14,6 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    dd(\App\Models\User::all());
+    dd(\App\Models\User::inRandomOrder()->first());
     return view('welcome');
 });
