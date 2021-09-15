@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Consumer\UserConsumer;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 
 class UserCommand extends Command
 {
@@ -39,19 +40,23 @@ class UserCommand extends Command
      */
     public function handle()
     {
-        if (User::count() > 0)
+        if (User::count() > 0) {
             $this->info('Users has been created.');
-        else {
-            $users=(new UserConsumer())->all()->map(function ($user) {
+            if ($this->confirm('Do you want fresh tables?', true)) {
+                Artisan::call('migrate:fresh');
+                $this->handle();
+            }
+        } else {
+            $users = (new UserConsumer())->all()->map(function ($user) {
                 return [
-                    'id'=>$user->id,
-                    'name'=>$user->name,
-                    'email'=>$user->email,
-                    'username'=>$user->username,
-                    'address'=>json_encode($user->address),
-                    'phone'=>$user->phone,
-                    'website'=>$user->website,
-                    'company'=>json_encode($user->company),
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'username' => $user->username,
+                    'address' => json_encode($user->address),
+                    'phone' => $user->phone,
+                    'website' => $user->website,
+                    'company' => json_encode($user->company),
                 ];
             })->toArray();
             User::insert($users);
